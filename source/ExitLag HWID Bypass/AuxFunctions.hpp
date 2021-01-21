@@ -6,18 +6,17 @@ DWORD GetPIdByProcessName(const char* name)
 {
 	PROCESSENTRY32 PE32;
 	PE32.dwSize = sizeof(PROCESSENTRY32);
-	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0); // dá um print nos processos
-	BOOL status = Process32First(hSnap, &PE32); // BLZ, INICIOU
-	while (status) {
+	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	do {
 		if (!strcmp(PE32.szExeFile, name)) {
 			CloseHandle(hSnap);
 			return PE32.th32ProcessID;
 		}
-		status = Process32Next(hSnap, &PE32);
-	}
+	} while (Process32Next(hSnap, &PE32));
 	CloseHandle(hSnap);
 	return 0;
 }
+
 
 
 // Get the address of the module in the memory.
@@ -29,18 +28,18 @@ DWORD GetModuleAddressByName(DWORD Pid, const char* ModuleName) {
 	me32.dwSize = sizeof(MODULEENTRY32);
 	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, Pid);
 	Module32First(snapshot, &me32);
-	bool isntEnd = true;
-	while (isntEnd) {
+	do {
 		if (!strcmp(me32.szModule, ModuleName)) {
 			CloseHandle(snapshot);
 			return (uintptr_t)me32.modBaseAddr;
 		}
-		isntEnd = Module32Next(snapshot, &me32);
-	}
+	} while (Module32Next(snapshot, &me32));
 	CloseHandle(snapshot);
 	return 0;
 }
 
+
+// this function I got from the internet. This could be much bettern, but anyway.
 // function to split strings. This is used by PatternStringToBytePatternAndMask to  
 // get the bytes (or unknow byte) separated by spaces
 // const string& s -> the string to be splitted.
@@ -97,23 +96,23 @@ void PatternStringToBytePatternAndMask(string in_pattern, vector<byte>* out_patt
 
 // this function scan throw all the memory of another process by the pattern that you choice.
 // HANDLE hprocess -> a HANDLE to the target process
-// uintptr_t start_address -> the start address that we will look for the pattern
-// uintptr_tsection_size -> the size of the memory that we will look for the pattern
+// DWORD start_address -> the start address that we will look for the pattern
+// DWORD section_size -> the size of the memory that we will look for the pattern
 // vector<byte> pattern -> this is actually the pattern, a byte array with the bytes that we will look for in the memory
 // string mask -> This say the bytes that we want to include or not in the pattern.
 // return uintptr_t -> the address first address found. Return 0 if not found.
-uintptr_t ExPatternScanByStartAddress(HANDLE hprocess, uintptr_t start_address, uintptr_t section_size, vector<byte> pattern, string mask) {
+DWORD ExPatternScanByStartAddress(HANDLE hprocess, DWORD start_address, DWORD section_size, vector<byte> pattern, string mask) {
 	CONST DWORD buf_sz = 4096;
-	DWORD old_protection = 0;
+	DWORD old_protection;
 	byte buffer[buf_sz];
-	for (uintptr_t current_section = start_address; current_section < start_address + section_size; current_section += buf_sz) { // get a piece of memory and read
+	for (DWORD current_section = start_address; current_section < start_address + section_size; current_section += buf_sz) { // get a piece of memory and read
 
 		if (!VirtualProtectEx(hprocess, (LPVOID)current_section, buf_sz, PAGE_EXECUTE_READWRITE, &old_protection)) { cout << "Error VirtualProtectEx memory section: " << hex << current_section << endl;  exit(1); };
 		if (!ReadProcessMemory(hprocess, (LPVOID*)current_section, &buffer, buf_sz, 0)) { cout << "Error ReadProcessMemory" << endl;  exit(2); }
 		if (!VirtualProtectEx(hprocess, (LPVOID)current_section, buf_sz, old_protection, &old_protection)) { cout << "Error VirtualProtectEx 2 " << endl;  exit(4); };
 
-		for (uintptr_t current_address = 0; current_address < buf_sz; current_address++) { // get this piece and scan for the pattern
-			for (uintptr_t correct_count = 0; correct_count < pattern.size(); correct_count++) {
+		for (DWORD current_address = 0; current_address < buf_sz; ++current_address) { // get this piece and scan for the pattern
+			for (DWORD correct_count = 0; correct_count < pattern.size(); ++correct_count) {
 				if (correct_count == pattern.size() - 1) {
 					return current_section + current_address;
 				}
@@ -121,8 +120,7 @@ uintptr_t ExPatternScanByStartAddress(HANDLE hprocess, uintptr_t start_address, 
 				if (mask[correct_count] == '?') {
 					continue;
 				}
-				if (buffer[current_address + correct_count] == pattern[correct_count]) {
-					int foo = 1;
+				else if (buffer[current_address + correct_count] == pattern[correct_count]) {
 					continue;
 				}
 				else {
