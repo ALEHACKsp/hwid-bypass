@@ -65,8 +65,8 @@ int main()
 
 
 	/* Get the process identificator of the target and check if it were found*/
-	DWORD PID = GetPIdByProcessName((char*)"ExitLag.exe");
-	if (!PID) {
+	DWORD Pid = GetPIdByProcessName((char*)"ExitLag.exe");
+	if (!Pid) {
 		/* Setting console collor */
 		SetConsoleTextAttribute(console, 0x0b);
 		cout << "Waiting for process \"ExitLag.exe\"..." << endl;
@@ -75,7 +75,7 @@ int main()
 	}
 
 	/* Open a handle to the target process, with full access, then check if it worked. */
-	HANDLE hprocess = OpenProcess(PROCESS_ALL_ACCESS, false, PID);
+	HANDLE hprocess = OpenProcess(PROCESS_ALL_ACCESS, false, Pid);
 	if (hprocess == INVALID_HANDLE_VALUE) {
 		SetConsoleTextAttribute(console, 0x0c);
 		cout << "Waiting for process \"ExitLag.exe\"..." << endl;
@@ -98,7 +98,7 @@ int main()
 	PatternStringToBytePatternAndMask(pattern_str, &pattern_byte, &mask);
 
 	/* Get the module start address. This is where the function will start to look for the pattern. Then check if it worked*/
-	auto main_module_address = GetModuleAddressByName(PID, "ExitLag.exe");
+	auto main_module_address = GetModuleAddressByName(Pid, "ExitLag.exe");
 	if (!main_module_address) {
 		SetConsoleTextAttribute(console, 0x0c);
 		cout << "Error on GetModuleAddress..." << endl;
