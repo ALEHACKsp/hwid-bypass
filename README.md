@@ -1,4 +1,4 @@
-# exitlag-hwid-bypass
+# ExitLag HWID Bypass
 Do u wanna create more than one trial account on exitlag? This 'spoofer' is for you!
 
 ## How to use?
