@@ -2,10 +2,9 @@
 <img src="https://www.exitlag.com/img/exitlag.png">
 Do u wanna create more than one trial account on exitlag? This 'spoofer' is for you!
 
+## Why? 
 
-##Why? 
-
-Exitlag limit to create ONE trial account per HWID. You don't suppost do create more than one trial account with your pc. They get the HWID when you do login on their program.
+Exitlag limit to create ONE trial account per HWID. You don't suppost to create more than one trial account with your pc. They get the HWID when you do login on their program.
 So what this bypass do is: after 
 
 ## How to use?
