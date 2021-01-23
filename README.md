@@ -2,6 +2,12 @@
 <img src="https://www.exitlag.com/img/exitlag.png">
 Do u wanna create more than one trial account on exitlag? This 'spoofer' is for you!
 
+
+##Why? 
+
+Exitlag limit to create ONE trial account per HWID. You don't suppost do create more than one trial account with your pc. They get the HWID when you do login on their program.
+So what this bypass do is: after 
+
 ## How to use?
 - Compile (or download the released one) and execute this program. Then execute ExitLag.
 - Login with a new account (create one with a tempemail, such has <a href="https://www.developermail.com/mail/">this one</a>).
