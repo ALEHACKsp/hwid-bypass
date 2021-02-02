@@ -24,3 +24,7 @@ Yes, you need to do this with every new account.
  - So, with one click you can create a new account.
  - I just didn't make a thing to create tons of accounts because they have a google captcha.
 
+
+### TODO
+(bugs)
+ - The rand function may change the address position. I will need to get the address of the rand dll then the offset of the function, if that make sense.
